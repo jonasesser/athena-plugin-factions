@@ -3,6 +3,7 @@ import { Faction } from '../../shared/interfaces';
 export const ExampleFactionData: Faction = {
     name: 'Los Santos Police Department',
     bank: 50000,
+    type: 'whatever',
     members: {
         // Rank -> 'Member'
         '51a8efe590851930ac59f5cc': {

@@ -1,14 +1,10 @@
-import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
-import { Collections } from '../../../../server/interface/iDatabaseCollections';
-import { sha256Random } from '../../../../server/utility/encryption';
-import { StorageView } from '../../../../server/views/storage';
 import { DefaultRanks } from '../../shared/defaultData';
 import { Faction, FactionCore, FactionRank } from '../../shared/interfaces';
-import { Character } from '../../../../shared/interfaces/character';
-import { IGenericResponse } from '../../../../shared/interfaces/iResponse';
-import { deepCloneObject } from '../../../../shared/utility/deepCopy';
-import { Athena } from '../../../../server/api/athena';
+import { Character } from '@AthenaShared/interfaces/character';
+import { IGenericResponse } from '@AthenaShared/interfaces/iResponse';
+import { deepCloneObject } from '@AthenaShared/utility/deepCopy';
+import { Athena } from '@AthenaServer/api/athena';
 
 export const FACTION_COLLECTION = 'factions';
 const factions: { [key: string]: Faction } = {};
@@ -43,8 +39,8 @@ export class FactionHandler {
     static factionTypes = {
         gang: 'GANG',
         neutral: 'NEUTRAL',
-        state: 'STATE'
-    }
+        state: 'STATE',
+    };
 
     /**
      * Initialize Factions on Startup
@@ -53,7 +49,7 @@ export class FactionHandler {
      * @memberof FactionCore
      */
     static async init() {
-        const factions = await Database.fetchAllData<Faction>(FACTION_COLLECTION);
+        const factions = await Athena.database.funcs.fetchAllData<Faction>(FACTION_COLLECTION);
 
         if (factions.length <= 0) {
             alt.logWarning(`No Factions have been Created`);
@@ -84,7 +80,9 @@ export class FactionHandler {
         }
 
         if (!this.factionTypes[_faction.type]) {
-            alt.logWarning('Cannot find faction-type ' + _faction.type + '! Type will be now ' + this.factionTypes.neutral);
+            alt.logWarning(
+                'Cannot find faction-type ' + _faction.type + '! Type will be now ' + this.factionTypes.neutral,
+            );
             _faction.type = this.factionTypes.neutral;
         }
 
@@ -92,7 +90,11 @@ export class FactionHandler {
             _faction.bank = 0;
         }
 
-        const character = await Database.fetchData<Character>('_id', characterOwnerID, Collections.Characters);
+        const character = await Athena.database.funcs.fetchData<Character>(
+            '_id',
+            characterOwnerID,
+            Athena.database.collections.Characters,
+        );
         if (!character) {
             alt.logWarning(`Could not find a character with identifier: ${characterOwnerID}`);
             return { status: false, response: `Could not find a character with identifier: ${characterOwnerID}` };
@@ -104,7 +106,7 @@ export class FactionHandler {
 
         const defaultRanks = deepCloneObject<Array<FactionRank>>(DefaultRanks);
         for (let i = 0; i < defaultRanks.length; i++) {
-            defaultRanks[i].uid = sha256Random(JSON.stringify(defaultRanks[i]));
+            defaultRanks[i].uid = Athena.utility.hash.sha256Random(JSON.stringify(defaultRanks[i]));
         }
 
         const faction: Faction = {
@@ -124,19 +126,19 @@ export class FactionHandler {
             tickActions: [],
         };
 
-        const document = await Database.insertData<Faction>(faction, FACTION_COLLECTION, true);
+        const document = await Athena.database.funcs.insertData<Faction>(faction, FACTION_COLLECTION, true);
         if (!document) {
             alt.logWarning(`Cannot insert faction into database.`);
             return { status: false, response: `Cannot insert faction into database.` };
         }
 
         character.faction = document._id.toString();
-        await Database.updatePartialData(
+        await Athena.database.funcs.updatePartialData(
             character._id,
             {
                 faction: character.faction,
             },
-            Collections.Characters,
+            Athena.database.collections.Characters,
         );
 
         const target = alt.Player.all.find((x) => x && x.data && x.data._id.toString() === character._id.toString());
@@ -182,7 +184,11 @@ export class FactionHandler {
         });
 
         // Clear all members...
-        const members = await Database.fetchAllByField<Character>('faction', factionClone._id, Collections.Characters);
+        const members = await Athena.database.funcs.fetchAllByField<Character>(
+            'faction',
+            factionClone._id,
+            Athena.database.collections.Characters,
+        );
         let onlinePlayers: Array<alt.Player> = [];
         for (let i = 0; i < members.length; i++) {
             const member = members[i];
@@ -205,16 +211,20 @@ export class FactionHandler {
             // For non-logged in character owner add bank balance
             if (!player && member._id === ownerIdentifier) {
                 member.bank += factionClone.bank;
-                await Database.updatePartialData(
+                await Athena.database.funcs.updatePartialData(
                     member._id.toString(),
                     { faction: null, bank: member.bank },
-                    Collections.Characters,
+                    Athena.database.collections.Characters,
                 );
                 continue;
             }
 
             // Remove faction from character
-            await Database.updatePartialData(member._id.toString(), { faction: null }, Collections.Characters);
+            await Athena.database.funcs.updatePartialData(
+                member._id.toString(),
+                { faction: null },
+                Athena.database.collections.Characters,
+            );
         }
 
         // Clear all vehicles...
@@ -226,7 +236,7 @@ export class FactionHandler {
                 vehicle.destroy();
             }
 
-            await Database.deleteById(vehicleId, Collections.Vehicles);
+            await Athena.database.funcs.deleteById(vehicleId, Athena.database.collections.Vehicles);
         }
 
         // Force close storage...
@@ -235,14 +245,14 @@ export class FactionHandler {
                 continue;
             }
 
-            StorageView.close(onlinePlayers[i]);
+            Athena.views.storage.close(onlinePlayers[i]);
         }
 
         // Delete storage...
         if (factionClone.storages && Array.isArray(factionClone.storages)) {
             for (let i = 0; i < factionClone.storages.length; i++) {
                 const storageId = factionClone.storages[i];
-                Database.deleteById(storageId, Collections.Storage);
+                Athena.database.funcs.deleteById(storageId, Athena.database.collections.Storage);
             }
         }
 
@@ -273,7 +283,7 @@ export class FactionHandler {
             faction[key] = partialObject[key];
         });
 
-        await Database.updatePartialData(faction._id, partialObject, FACTION_COLLECTION);
+        await Athena.database.funcs.updatePartialData(faction._id, partialObject, FACTION_COLLECTION);
         return { status: true, response: `Updated Faction Data` };
     }
 

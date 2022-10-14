@@ -1,4 +1,4 @@
-import { Vector3 } from '../../../shared/interfaces/vector';
+import * as alt from 'alt-shared';
 
 type _id = string;
 
@@ -227,7 +227,6 @@ export interface FactionCore {
      */
     canDisband: boolean;
 
-
     /**
      * Faction Type (gang, neutral, state)
      *
@@ -249,10 +248,10 @@ export interface FactionStorage {
     /**
      * Position of the storage facility
      *
-     * @type {Vector3}
+     * @type {alt.IVector3}
      * @memberof FactionStorage
      */
-    pos: Vector3;
+    pos: alt.IVector3;
 
     /**
      * Database _id for the storage
@@ -295,18 +294,18 @@ export interface FactionSettings {
     /**
      * The current positions of faction headquarters.
      *
-     * @type {Vector3}
+     * @type {alt.IVector3}
      * @memberof FactionSettings
      */
-    position?: Vector3;
+    position?: alt.IVector3;
 
     /**
      * A list of vehicle parking spots to spawn vehicles from.
      *
-     * @type {Array<Vector3>}
+     * @type {Array<alt.IVector3>}
      * @memberof Faction
      */
-    parkingSpots?: Array<{ pos: Vector3; rot: Vector3 }>;
+    parkingSpots?: Array<{ pos: alt.IVector3; rot: alt.IVector3 }>;
 
     /**
      * A list of vehicles available for purchase for this faction.

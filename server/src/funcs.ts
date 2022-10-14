@@ -1,15 +1,10 @@
-import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
-import { Collections } from '../../../../server/interface/iDatabaseCollections';
-import { Character } from '../../../../shared/interfaces/character';
+import { Character } from '@AthenaShared/interfaces/character';
 import { FactionHandler } from './handler';
-import { StorageSystem } from '../../../../server/systems/storage';
-import { Vector3 } from '../../../../shared/interfaces/vector';
 import { Faction, FactionCharacter, FactionRank, RankPermissions } from '../../shared/interfaces';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
-import { Athena } from '../../../../server/api/athena';
-import VehicleFuncs from '../../../../server/extensions/vehicleFuncs';
-import { IVehicle } from '../../../../shared/interfaces/iVehicle';
+import { Athena } from '@AthenaServer/api/athena';
+import { IVehicle } from '@AthenaShared/interfaces/iVehicle';
 
 let hasInitialized = false;
 
@@ -327,7 +322,11 @@ export class FactionFuncs {
      */
     static async addMember(faction: Faction, characterID: string): Promise<boolean> {
         const lowestRank = FactionFuncs.getRankWithLowestWeight(faction);
-        const character = await Database.fetchData<Character>('_id', characterID, Collections.Characters);
+        const character = await Athena.database.funcs.fetchData<Character>(
+            '_id',
+            characterID,
+            Athena.database.collections.Characters,
+        );
         if (!character) {
             return false;
         }
@@ -347,7 +346,7 @@ export class FactionFuncs {
             hasOwnership: false,
         };
 
-        await Database.updatePartialData(
+        await Athena.database.funcs.updatePartialData(
             character._id.toString(),
             { faction: faction._id.toString() },
             Athena.database.collections.Characters,
@@ -372,10 +371,18 @@ export class FactionFuncs {
      * @memberof FactionFuncs
      */
     static async kickMember(faction: Faction, characterID: string): Promise<boolean> {
-        const character = await Database.fetchData<Character>(`_id`, characterID, Collections.Characters);
+        const character = await Athena.database.funcs.fetchData<Character>(
+            `_id`,
+            characterID,
+            Athena.database.collections.Characters,
+        );
 
         if (character) {
-            await Database.updatePartialData(character._id.toString(), { faction: null }, Collections.Characters);
+            await Athena.database.funcs.updatePartialData(
+                character._id.toString(),
+                { faction: null },
+                Athena.database.collections.Characters,
+            );
         }
 
         const target = alt.Player.all.find((p) => p.data && p.data._id.toString() === characterID);
@@ -635,12 +642,12 @@ export class FactionFuncs {
      * @return {*}
      * @memberof FactionFuncs
      */
-    static async createStorage(faction: Faction, name: string, pos: Vector3) {
+    static async createStorage(faction: Faction, name: string, pos: alt.IVector3) {
         if (!faction.storages) {
             faction.storages = [];
         }
 
-        const storage = await StorageSystem.create({ cash: 0, items: [], maxSize: 128 });
+        const storage = await Athena.systems.storage.create({ cash: 0, items: [], maxSize: 128 });
         if (!storage) {
             return false;
         }
@@ -936,7 +943,7 @@ export class FactionFuncs {
      * @param {Vector3} pos - Vector3
      * @returns A boolean value.
      */
-    static async setHeadQuarters(faction: Faction, pos: Vector3) {
+    static async setHeadQuarters(faction: Faction, pos: alt.IVector3) {
         faction.settings.position = pos;
 
         const didUpdate = await FactionHandler.update(faction._id as string, { settings: faction.settings });
@@ -1056,7 +1063,7 @@ export class FactionFuncs {
         // Attempt to create the vehicle in the database.
         let newVehicle: IVehicle;
         try {
-            newVehicle = await VehicleFuncs.add({
+            newVehicle = await Athena.vehicle.funcs.add({
                 model,
                 owner: faction._id.toString(),
                 position: new alt.Vector3(0, 0, 0),
@@ -1133,25 +1140,29 @@ export class FactionFuncs {
         return didUpdate.status;
     }
 
-    static async spawnVehicle(faction: Faction, vehicleId: string, location: { pos: Vector3; rot: Vector3 }) {
+    static async spawnVehicle(faction: Faction, vehicleId: string, location: { pos: alt.IVector3; rot: alt.IVector3 }) {
         const vehIndex = alt.Vehicle.all.findIndex((veh) => veh && veh.data && veh.data._id.toString() === vehicleId);
         if (vehIndex >= 0) {
             return false;
         }
-        
+
         // Check if the parking spot is free.
         const isSpotFree = await FactionFuncs.isParkingSpotFree(location.pos);
         if (!isSpotFree) {
             return false;
         }
-        
+
         // Spawn the vehicle.
-        const vehicleInfo = await Database.fetchData<IVehicle>('_id', vehicleId, Athena.database.collections.Vehicles);
+        const vehicleInfo = await Athena.database.funcs.fetchData<IVehicle>(
+            '_id',
+            vehicleId,
+            Athena.database.collections.Vehicles,
+        );
         if (!vehicleInfo) {
             return false;
         }
 
-        VehicleFuncs.spawn(vehicleInfo, location.pos, location.rot);
+        Athena.vehicle.funcs.spawn(vehicleInfo, location.pos, location.rot);
         FactionFuncs.updateMembers(faction);
         return true;
     }
@@ -1159,11 +1170,11 @@ export class FactionFuncs {
     /**
      * Checks if a vehicle is in a parking spot.
      * @static
-     * @param {Vector3} parkingSpot
+     * @param {alt.IVector3} parkingSpot
      * @returns a boolean value.
      * @memberof FactionFuncs
      */
-    static async isParkingSpotFree(parkingSpot: Vector3) {
+    static async isParkingSpotFree(parkingSpot: alt.IVector3) {
         const pointTest = new alt.ColshapeSphere(parkingSpot.x, parkingSpot.y, parkingSpot.z - 1, 2);
 
         // Have to do a small sleep to the ColShape propogates entities inside of it.

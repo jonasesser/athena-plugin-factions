@@ -1,7 +1,7 @@
 import * as alt from 'alt-server';
-import { Athena } from '../../../../server/api/athena';
-import { command } from '../../../../server/decorators/commands';
-import { PERMISSIONS } from '../../../../shared/flags/permissionFlags';
+import { Athena } from '@AthenaServer/api/athena';
+import { command } from '@AthenaServer/decorators/commands';
+import { PERMISSIONS } from '@AthenaShared/flags/permissionFlags';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
 import { FactionFuncs } from './funcs';
 import { FactionHandler } from './handler';
@@ -20,14 +20,18 @@ export class FactionCommands {
      * @param {string[]} name - The name of the faction.
      * @returns The result of the add function.
      */
-    @command('fcreate', '/fcreate [type: (Neutral, State, Gang)] [name] - Open faction panel if in faction.', PERMISSIONS.ADMIN)
+    @command(
+        'fcreate',
+        '/fcreate [type: (Neutral, State, Gang)] [name] - Open faction panel if in faction.',
+        PERMISSIONS.ADMIN,
+    )
     private static async handleFactionCreate(player: alt.Player, type: string, ...name: string[]) {
         const factionName = name.join(' ');
         const result = await FactionHandler.add(player.data._id.toString(), {
             bank: 0,
             canDisband: true,
             name: factionName,
-            type: type.toUpperCase()
+            type: type.toUpperCase(),
         });
 
         if (!result.status) {

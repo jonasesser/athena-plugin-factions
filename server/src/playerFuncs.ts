@@ -1,13 +1,13 @@
 import * as alt from 'alt-server';
 import { FactionCharacter, FactionRank, RankPermissions } from '../../shared/interfaces';
-import { CurrencyTypes } from '../../../../shared/enums/currency';
-import { isFlagEnabled } from '../../../../shared/utility/flags';
+import { CurrencyTypes } from '@AthenaShared/enums/currency';
+import { isFlagEnabled } from '@AthenaShared/utility/flags';
 import { FACTION_CONFIG } from './config';
 import { FactionFuncs } from './funcs';
 import { FactionHandler } from './handler';
-import { Athena } from '../../../../server/api/athena';
+import { Athena } from '@AthenaServer/api/athena';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
-import { distance, getClosestVector } from '../../../../shared/utility/vector';
+import { distance } from '@AthenaShared/utility/vector';
 
 /**
  * Bound to the player to manipulate individual faction functionality.

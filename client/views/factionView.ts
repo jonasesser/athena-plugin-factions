@@ -1,8 +1,8 @@
 import * as alt from 'alt-client';
-import { WebViewController } from '@AthenaClient/extensions/view2';
-import { isAnyMenuOpen } from '@AthenaClient/utility/menus';
-import { PLAYER_SYNCED_META } from '@AthenaShared/enums/playerSynced';
-import { VEHICLE_SYNCED_META } from '@AthenaShared/enums/vehicleSyncedMeta';
+import { WebViewController } from '../../../../client/extensions/view2';
+import { isAnyMenuOpen } from '../../../../client/utility/menus';
+import { PLAYER_SYNCED_META } from '../../../../shared/enums/playerSynced';
+import { VEHICLE_SYNCED_META } from '../../../../shared/enums/vehicleSyncedMeta';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
 import { Faction } from '../../shared/interfaces';
 

@@ -1,5 +1,4 @@
 import * as alt from 'alt-shared';
-
 type _id = string;
 
 export const RankPermissionNames = {
@@ -83,6 +82,14 @@ export interface RankPermissions {
      * @memberof RankPermissions
      */
     manageVehicles?: boolean;
+
+    /**
+     * Can open storages
+     *
+     * @type {boolean}
+     * @memberof RankPermissions
+     */
+    canOpenStorages: boolean;
 }
 
 /**
@@ -248,10 +255,10 @@ export interface FactionStorage {
     /**
      * Position of the storage facility
      *
-     * @type {alt.IVector3}
+     * @type {Vector3}
      * @memberof FactionStorage
      */
-    pos: alt.IVector3;
+    pos: alt.Vector3;
 
     /**
      * Database _id for the storage
@@ -294,18 +301,18 @@ export interface FactionSettings {
     /**
      * The current positions of faction headquarters.
      *
-     * @type {alt.IVector3}
+     * @type {Vector3}
      * @memberof FactionSettings
      */
-    position?: alt.IVector3;
+    position?: alt.Vector3;
 
     /**
      * A list of vehicle parking spots to spawn vehicles from.
      *
-     * @type {Array<alt.IVector3>}
+     * @type {Array<Vector3>}
      * @memberof Faction
      */
-    parkingSpots?: Array<{ pos: alt.IVector3; rot: alt.IVector3 }>;
+    parkingSpots?: Array<{ pos: alt.Vector3; rot: alt.Vector3 }>;
 
     /**
      * A list of vehicles available for purchase for this faction.

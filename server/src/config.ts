@@ -1,4 +1,4 @@
-import { PERMISSIONS } from '@AthenaShared/flags/permissionFlags';
+import { PERMISSIONS } from '../../../../shared/flags/permissionFlags';
 
 export const FACTION_CONFIG = {
     FactionAdmins: [

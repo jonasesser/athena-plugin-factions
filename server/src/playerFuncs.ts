@@ -1,13 +1,13 @@
 import * as alt from 'alt-server';
 import { FactionCharacter, FactionRank, RankPermissions } from '../../shared/interfaces';
-import { CurrencyTypes } from '@AthenaShared/enums/currency';
-import { isFlagEnabled } from '@AthenaShared/utility/flags';
+import { CurrencyTypes } from '../../../../shared/enums/currency';
+import { isFlagEnabled } from '../../../../shared/utility/flags';
 import { FACTION_CONFIG } from './config';
 import { FactionFuncs } from './funcs';
 import { FactionHandler } from './handler';
-import { Athena } from '@AthenaServer/api/athena';
+import { Athena } from '../../../../server/api/athena';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
-import { distance } from '@AthenaShared/utility/vector';
+import { distanceWithRef, getClosestVector } from '../../../../shared/utility/vector';
 
 /**
  * Bound to the player to manipulate individual faction functionality.
@@ -697,7 +697,10 @@ export class FactionPlayerFuncs {
         }
 
         const sortedSpots = faction.settings.parkingSpots.sort((a, b) => {
-            return distance(player.pos, a.pos) - distance(player.pos, b.pos);
+            return (
+                distanceWithRef('playerFuncs.ts', player.pos, a.pos) -
+                distanceWithRef('playerfuncs0.ts', player.pos, b.pos)
+            );
         });
 
         return await FactionFuncs.spawnVehicle(faction, vehicleId, sortedSpots[0]);

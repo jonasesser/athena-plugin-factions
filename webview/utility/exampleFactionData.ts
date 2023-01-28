@@ -3,7 +3,6 @@ import { Faction } from '../../shared/interfaces';
 export const ExampleFactionData: Faction = {
     name: 'Los Santos Police Department',
     bank: 50000,
-    type: 'whatever',
     members: {
         // Rank -> 'Member'
         '51a8efe590851930ac59f5cc': {
@@ -93,6 +92,7 @@ export const ExampleFactionData: Faction = {
                 manageMembers: true,
                 manageRanks: true,
                 manageRankPermissions: true,
+                canOpenStorages: true,
             },
             vehicles: [],
             weight: 99,
@@ -109,6 +109,7 @@ export const ExampleFactionData: Faction = {
                 manageMembers: true,
                 manageRanks: false,
                 manageRankPermissions: false,
+                canOpenStorages: true,
             },
             vehicles: [],
             weight: 65,
@@ -125,6 +126,7 @@ export const ExampleFactionData: Faction = {
                 manageMembers: true,
                 manageRanks: false,
                 manageRankPermissions: false,
+                canOpenStorages: false,
             },
             vehicles: [],
             weight: 55,
@@ -141,6 +143,7 @@ export const ExampleFactionData: Faction = {
                 manageMembers: true,
                 manageRanks: false,
                 manageRankPermissions: false,
+                canOpenStorages: false,
             },
             vehicles: [],
             weight: 5,
@@ -157,6 +160,7 @@ export const ExampleFactionData: Faction = {
                 manageMembers: false,
                 manageRanks: false,
                 manageRankPermissions: false,
+                canOpenStorages: false,
             },
             vehicles: ['626c64fbfdf5ff231b4991ee'],
             weight: 1,
@@ -164,12 +168,12 @@ export const ExampleFactionData: Faction = {
         },
     ],
     settings: {
-        position: { x: 0, y: 0, z: 0 },
-        parkingSpots: [
-            { pos: { x: 1, y: 1, z: 1 }, rot: { x: 1, y: 1, z: 1 } },
-            { pos: { x: 25, y: 25, z: 5 }, rot: { x: 1, y: 1, z: 1 } },
-            { pos: { x: 12, y: 12, z: 1 }, rot: { x: 1, y: 1, z: 1 } },
-        ],
+        position: null, //{ x: 0, y: 0, z: 0 },
+        parkingSpots: null,
+        // { pos: { x: 1, y: 1, z: 1 }, rot: { x: 1, y: 1, z: 1 } },
+        // { pos: { x: 25, y: 25, z: 5 }, rot: { x: 1, y: 1, z: 1 } },
+        // { pos: { x: 12, y: 12, z: 1 }, rot: { x: 1, y: 1, z: 1 } },
+        // ],
         vehicles: [
             { model: 'police', price: 25000 },
             { model: 'police2', price: 25000 },
@@ -186,4 +190,5 @@ export const ExampleFactionData: Faction = {
     ],
     actions: {},
     tickActions: [],
+    type: '',
 };

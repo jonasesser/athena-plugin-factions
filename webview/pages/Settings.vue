@@ -27,6 +27,7 @@
                 :key="index"
                 v-bind:faction="faction"
                 v-bind:character="character"
+                v-bind:is-owner="isOwner"
                 v-bind:money="money"
                 v-bind:pos="pos"
                 v-bind:rot="rot"

@@ -1,5 +1,5 @@
 import * as alt from 'alt-server';
-import { PluginSystem } from '@AthenaServer/systems/plugins';
+import { PluginSystem } from '../../../server/systems/plugins';
 import { FactionActions } from './src/actions';
 import { FactionCommands } from './src/commands';
 import { FactionFuncs } from './src/funcs';

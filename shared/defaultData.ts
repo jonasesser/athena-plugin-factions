@@ -1,4 +1,4 @@
-import { Complete } from '@AthenaShared/utility/complete';
+import { Complete } from '../../../shared/utility/complete';
 import { FactionRank, RankPermissions } from './interfaces';
 
 export const DefaultRanks: Array<FactionRank> = [
@@ -13,6 +13,7 @@ export const DefaultRanks: Array<FactionRank> = [
             manageMembers: true,
             manageRanks: true,
             manageRankPermissions: true,
+            canOpenStorages: true,
         },
         vehicles: [],
         weight: 99,
@@ -28,6 +29,7 @@ export const DefaultRanks: Array<FactionRank> = [
             manageMembers: false,
             manageRanks: false,
             manageRankPermissions: false,
+            canOpenStorages: true,
         },
         vehicles: [],
         weight: 1,
@@ -43,4 +45,5 @@ export const AllRankPermissions: Complete<RankPermissions> = {
     manageRanks: false,
     manageRankPermissions: false,
     manageVehicles: false,
+    canOpenStorages: false,
 };
